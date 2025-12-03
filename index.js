@@ -4,22 +4,21 @@ import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/exampl
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/loaders/OBJLoader.js';
 import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/objects/Reflector.js';
-
 // SCENE
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87CEEB);
 scene.fog = new THREE.FogExp2(0xCCC8C4); 
 
 // CAMERA
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 5000);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
 camera.position.set(950, 400, 30);
 
 // RENDERER
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
 renderer.shadowMap.enabled = true; 
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+document.getElementById('webGL').appendChild(renderer.domElement);
 
 // CONTROLS
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -196,6 +195,20 @@ const groundMaterial = new THREE.MeshPhongMaterial({
 });
 
 
+// Effet miroir (en dessous)
+const mirrorGeometry = new THREE.PlaneGeometry(10000, 10000);
+const mirror = new Reflector(mirrorGeometry, {
+  clipBias: 0.05, 
+  textureWidth: window.innerWidth * window.devicePixelRatio,
+  textureHeight: window.innerHeight * window.devicePixelRatio,
+  color: 0x777777 
+});
+
+mirror.rotation.x = -Math.PI / 2;
+mirror.position.y = -10;
+scene.add(mirror);
+
+// Sol avec texture d'eau (au dessus du miroir)
 const solidGround = new THREE.Mesh(
   new THREE.PlaneGeometry(10000, 10000, 100, 100),
   groundMaterial
@@ -204,23 +217,6 @@ solidGround.rotation.x = -Math.PI / 2;
 solidGround.position.y = -2;
 solidGround.receiveShadow = true;
 scene.add(solidGround);
-
-// Effet miroir  
-const mirrorGeometry = new THREE.PlaneGeometry(10000, 10000);
-const mirror = new Reflector(mirrorGeometry, {
-  clipBias: 0.003, 
-  textureWidth: window.innerWidth * window.devicePixelRatio,
-  textureHeight: window.innerHeight * window.devicePixelRatio,
-  color: 0x777777 
-});
-
-mirror.rotation.x = -Math.PI / 2;
-mirror.position.y = -1.999;
-
-mirror.material.transparent = true;
-mirror.material.opacity = 0.5; 
-mirror.renderOrder = 1;
-scene.add(mirror);
 
 
 const objLoader = new OBJLoader();
@@ -273,7 +269,11 @@ sprite2.position.set(20, 160, 0);
 sprite2.scale.set(50, 100, 50);
 scene.add(sprite2);
 
-const gui = new dat.GUI();
+// GUI - Panneau de contrôle
+const guiContainer = document.getElementById('guiContainer');
+const gui = new dat.GUI({ autoPlace: false });
+guiContainer.appendChild(gui.domElement);
+
 const cameraFolder = gui.addFolder("Zoom & Brouillard");
 cameraFolder.add(camera, "fov", 10, 100).name("Zoom").onChange(() => {
  camera.updateProjectionMatrix();

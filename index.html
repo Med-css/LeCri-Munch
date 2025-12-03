@@ -1,489 +1,388 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <title>Projet WebGL - Le Cri de Munch</title>
-    <style>
-        @font-face {
-            font-family: 'Parisienne';
-            src: url('./Parisienne.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        body {
-            margin: 0;
-            background-color: #f0e6d9;
-            width: 100%;
-            overflow-x: hidden;
-            font-family: 'Parisienne', arial;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            line-height: 1.8;
-            color: #333;
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        .centre {
-            text-align: center;
-        }
-
-        header {
-            height: 80px;
-            width: 100%;
-            background-image: url(./textures/skybox2.png);
-            overflow: hidden;
-            display: flex;
-            justify-content: left;
-            align-items: center;
-            background-color: #2c3e50;
-        }
-
-        .munch {
-            border-radius: 50%;
-            height: 75px;
-            width: 75px;
-            background-image: url(./textures/munch.jpg);
-            background-size: cover;
-            background-position: center;
-            border: 2px solid #8e44ad;
-            margin: 40px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .texte-degrade {
-            font-size: 80px;
-            font-weight: bold;
-            background: linear-gradient(to right, #8e44ad, #5e2177);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-family: 'Parisienne', arial;
-            margin: 0.5em 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .small {
-            font-size: 50px;
-            font-weight: bold;
-            background: linear-gradient(to right, #8e44ad, #5e2177);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-family: 'Parisienne', arial;
-            padding-left: 5em;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .presentation {
-            width: 100%;
-            padding: 4em 0;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 20px;
-            margin: 2em 0;
-        }
-
-        .presentation img {
-            width: 300px;
-            justify-self: center;
-            align-items: center;
-            border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            margin: 1em 0;
-        }
-
-        .center-section {
-            width: 100%;
-            align-items: center;
-            justify-content: center;
-            display: flex;
-            flex-direction: column;
-            padding: 0 1em;
-        }
-
-        .button {
-            height: 60px;
-            width: 250px;
-            border-radius: 30px;
-            background: linear-gradient(to right, #8e44ad, #5e2177);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            margin: 2em auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .button:hover {
-            transform: scale(1.05);
-        }
-
-        button {
-            color: white;
-            font-family: 'Parisienne', arial;
-            background-color: transparent;
-            border: none;
-            font-size: 30px;
-            cursor: pointer;
-        }
-
-        .checklist {
-            width: 100%;
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            background-color: rgba(255, 255, 255, 0.95);
-            font-family: 'Parisienne', arial;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .checklist h3 {
-            font-size: 38px;
-            margin-bottom: 25px;
-            color: #8e44ad;
-            text-align: center;
-            border-bottom: 2px solid #8e44ad;
-            padding-bottom: 10px;
-        }
-
-        .checklist ul {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-            padding: 0 1em;
-        }
-
-        .checklist li {
-            display: flex;
-            align-items: center;
-            font-size: 20px;
-            color: #444;
-            padding: 8px 0;
-        }
-
-        .checklist input[type="checkbox"] {
-            margin-right: 15px;
-            transform: scale(1.3);
-            cursor: not-allowed;
-        }
-
-        .webgl-container {
-            flex: 1;
-            padding: 2em 0;
-        }
-
-        .explanation-section {
-            text-align: center;
-            padding: 50px 30px;
-            background-color: rgba(255, 255, 255, 0.8);
-            margin: 2em 0;
-            border-radius: 15px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .explanation-section h1 {
-            font-size: 50px;
-            margin-bottom: 30px;
-            background: linear-gradient(to right, #8e44ad, #5e2177);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .bottom-text {
-            font-size: 22px;
-            line-height: 2;
-            text-align: justify;
-            max-width: 1000px;
-            margin: 0 auto 2em;
-            padding: 0 2em;
-            color: #333;
-        }
-
-        .information {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            text-align: center;
-            padding: 2em;
-            box-sizing: border-box;
-        }
-
-        .information h1 {
-            font-family: 'Parisienne', arial;
-            color: #8e44ad;
-            margin: 1.5em 0;
-            font-size: 32px;
-            line-height: 1.6;
-            max-width: 800px;
-        }
-
-        @media (max-width: 1024px) {
-            .texte-degrade {
-                font-size: 60px;
-            }
-
-            .small {
-                font-size: 40px;
-            }
-
-            .checklist ul {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
-
-            .bottom-text {
-                font-size: 18px;
-                line-height: 1.8;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .texte-degrade {
-                font-size: 40px;
-            }
-
-            .small {
-                font-size: 30px;
-                padding-left: 2em;
-            }
-
-            .checklist ul {
-                grid-template-columns: 1fr;
-            }
-
-            .bottom-text {
-                font-size: 16px;
-                padding: 0 1em;
-            }
-
-            .information h1 {
-                font-size: 24px;
-            }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Le Cri de Munch - Une réinterprétation 3D interactive de l'œuvre expressionniste">
+    <title>Le Cri de Munch | Expérience 3D Interactive</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <header>
-        <div class="munch"></div>
-    </header>
 
-    <div class="information">
-        <h1>Ce projet WebGL utilise des technologies 3D avancées et peut nécessiter des ressources graphiques importantes.</h1>
-        <h1>Pour une expérience optimale, nous recommandons d'utiliser un ordinateur avec une carte graphique récente.</h1>
-        <button class="button" id="information">Compris !</button>
+<body class="no-scroll">
+    <!-- LOADER SCREEN -->
+    <div class="loader-screen" id="loaderScreen">
+        <div class="loader-content">
+            <h1 class="loader-title">Le Cri de Munch</h1>
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Chargement de la scène 3D...</p>
+            <p class="loader-subtext">Veuillez patienter</p>
+        </div>
     </div>
 
-    <!-- Chargement des bibliothèques -->
+    <!-- MODAL D'INFORMATION -->
+    <div class="info-modal" id="infoModal">
+        <div class="info-modal-content">
+            <h2>🎨 Bienvenue dans l'expérience</h2>
+            <p>Ce projet WebGL utilise des technologies 3D avancées. Pour une expérience optimale, nous recommandons un ordinateur avec une carte graphique récente.</p>
+            <button class="btn btn-primary" id="closeModal">Découvrir l'œuvre</button>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header id="mainHeader">
+        <div class="logo-container">
+            <div class="munch-avatar"></div>
+            <span class="site-title">Le Cri de Munch</span>
+        </div>
+        <nav>
+            <ul id="navMenu">
+                <li><a href="#hero">Accueil</a></li>
+                <li><a href="#viewer">Visualisation 3D</a></li>
+                <li><a href="#presentation">L'œuvre</a></li>
+                <li><a href="#features">Fonctionnalités</a></li>
+                <li><a href="#technical">Technique</a></li>
+            </ul>
+        </nav>
+        <div class="nav-toggle" id="navToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Le Cri de Munch</h1>
+            <p class="hero-subtitle">Une réinterprétation 3D interactive</p>
+            <p class="hero-description">
+                Explorez l'une des œuvres les plus emblématiques de l'expressionnisme sous un angle entièrement nouveau grâce à notre expérience WebGL immersive.
+            </p>
+            <div class="hero-buttons">
+                <a href="#viewer" class="btn btn-primary">Voir en 3D</a>
+                <a href="#presentation" class="btn btn-secondary">En savoir plus</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+
+    <!-- Chargement des bibliothèques AVANT la section 3D -->
     <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
     <script type="importmap">
     {
         "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.138.0/build/three.module.js",
-            "three/addons/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.138.0/examples/jsm/controls/OrbitControls.js",
-            "three/addons/loaders/OBJLoader.js": "https://cdn.jsdelivr.net/npm/three@0.138.0/examples/jsm/loaders/OBJLoader.js",
-            "Coordinates": "./lib/Coordinates.js",
+            "three": "https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js",
+            "three/addons/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/controls/OrbitControls.js",
+            "three/addons/loaders/OBJLoader.js": "https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/loaders/OBJLoader.js",
+            "three/addons/loaders/GLTFLoader.js": "https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/loaders/GLTFLoader.js",
             "dat.gui": "https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js"
         }
     }
     </script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
-    <div class="webgl-container">
-        <h1 class="centre texte-degrade">Le Cri de Munch en 3D</h1>
-        <div id="webGL" class="centre"></div>
-    </div>
-
-    <script type="module" src="index.js"></script>
-
-    <section class="presentation">
-        <h2 class="texte-degrade small">Notre œuvre d'art interactive :</h2>
-        <div class="center-section">
-            <img src="./img.jpg" alt="Le Cri - Edvard Munch - Représentation 3D">
-
-            <p style="max-width: 900px; margin: 2em auto; text-align: center; font-size: 22px; color: #444; line-height: 1.9;">
-                <strong>Le Cri</strong> (1893) est l'une des œuvres les plus célèbres d'<strong>Edvard Munch</strong>, peintre norvégien et figure majeure de l'expressionnisme.
-                Ce tableau, qui représente une figure androgyne hurlant sous un ciel tourmenté, est devenu une icône de l'art moderne.
-                <br><br>
-                Notre projet WebGL offre une <strong>réinterprétation interactive</strong> de cette œuvre, permettant aux visiteurs d'explorer ses éléments sous différents angles et avec divers effets visuels.
-            </p>
-
-            <section class="checklist">
-                <h3>Fonctionnalités implémentées</h3>
-                <ul>
-                    <li>
-                        <input type="checkbox" id="item1" checked disabled>
-                        <label for="item1">Design esthétique inspiré de l'œuvre originale</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item2" checked disabled>
-                        <label for="item2">Interface responsive et intuitive</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item3" checked disabled>
-                        <label for="item3">Explications techniques complètes</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item4" disabled>
-                        <label for="item4">Optimisation pour les performances</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item5" checked disabled>
-                        <label for="item5">Modélisation 3D détaillée</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item6" checked disabled>
-                        <label for="item6">Palettes de couleurs fidèles à l'original</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item7" checked disabled>
-                        <label for="item7">Effets de transparence avancés</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item8" checked disabled>
-                        <label for="item8">Système d'éclairage dynamique</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item9" checked disabled>
-                        <label for="item9">Ombres portées réalistes</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item10" checked disabled>
-                        <label for="item10">Contrôle interactif de la caméra</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item11" checked disabled>
-                        <label for="item11">Effet de brouillard atmosphérique</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item12" checked disabled>
-                        <label for="item12">Surfaces réfléchissantes</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item13" checked disabled>
-                        <label for="item13">Textures haute résolution</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item14" checked disabled>
-                        <label for="item14">Matériaux avec transparence</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item15" checked disabled>
-                        <label for="item15">Effets de particules</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item16" disabled>
-                        <label for="item16">Environment mapping</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item17" checked disabled>
-                        <label for="item17">Skybox immersive</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item18" checked disabled>
-                        <label for="item18">Effets spéculaires</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item19" disabled>
-                        <label for="item19">Normal mapping</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item20" checked disabled>
-                        <label for="item20">Interface de contrôle GUI</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="item21" checked disabled>
-                        <label for="item21">Animations fluides</label>
-                    </li>
-                </ul>
-            </section>
-
-            <div id="scrollButton" class="button">
-                <button>Voir notre projet</button>
+    <!-- SECTION 3D VIEWER -->
+    <section class="viewer-section" id="viewer">
+        <div class="viewer-container">
+            <div class="viewer-header">
+                <h2 class="section-title">Visualisation 3D</h2>
+                <p class="section-subtitle">Explorez la scène en utilisant votre souris pour naviguer</p>
+            </div>
+            <div class="webgl-wrapper" id="webglWrapper">
+                <div id="webGL"></div>
+                <div id="guiContainer"></div>
+            </div>
+            <div class="viewer-controls-hint">
+                <p>
+                    <span>Clic gauche</span> Rotation 
+                    <span>Molette</span> Zoom 
+                    <span>Clic droit</span> Déplacement
+                </p>
             </div>
         </div>
     </section>
 
-    <section class="explanation-section">
-        <h1>Explications techniques</h1>
-        <p class="bottom-text">
-            Notre projet est une <strong>réinterprétation 3D interactive</strong> du célèbre tableau "Le Cri" d'Edvard Munch, réalisée avec la bibliothèque <strong>Three.js</strong>. Voici les principales caractéristiques techniques :
-            <br><br>
-            <strong>1. Modélisation 3D :</strong>
-            Nous avons recréé les éléments clés du tableau (la figure, le pont, le ciel tourmenté) en utilisant des formes géométriques 3D. Les modèles ont été conçus pour capturer l'essence expressionniste de l'œuvre originale, avec des proportions et des déformations caractéristiques.
-            <br><br>
-            <strong>2. Textures et matériaux :</strong>
-            Chaque élément 3D est recouvert de textures haute résolution qui reproduisent les couleurs et les motifs du tableau original. Nous avons utilisé des <em>shaders</em> personnalisés pour les effets de transparence et les reflets, notamment pour le ciel et l'eau.
-            <br><br>
-            <strong>3. Éclairage et ambiance :</strong>
-            Un système d'éclairage complexe combine plusieurs sources lumineuses pour créer des ombres portées réalistes et mettre en valeur les formes. Un effet de brouillard (<em>fog</em>) a été ajouté pour renforcer l'atmosphère dramatique de l'œuvre.
-            <br><br>
-            <strong>4. Interactivité :</strong>
-            L'utilisateur peut contrôler la caméra pour explorer la scène sous tous les angles. Une interface graphique (GUI) permet d'ajuster en temps réel divers paramètres comme l'intensité de la lumière, la densité du brouillard ou la vitesse des animations.
-            <br><br>
-            <strong>5. Optimisation :</strong>
-            Pour garantir des performances fluides, nous avons optimisé les modèles 3D et utilisé des techniques de <em>level of detail</em> (LOD). Les textures sont compressées pour réduire le temps de chargement tout en conservant une qualité visuelle élevée.
-            <br><br>
-            <strong>6. Animations :</strong>
-            Des animations subtiles (comme le mouvement des particules dans le ciel ou la légère oscillation de la figure) ajoutent une dimension dynamique à l'expérience, tout en restant fidèles à l'esprit statique mais intense du tableau original.
-        </p>
+    <!-- Script principal 3D -->
+    <script type="module" src="index.js"></script>
+
+    <!-- SECTION PRÉSENTATION -->
+    <section class="presentation-section" id="presentation">
+        <div class="presentation-grid">
+            <div class="presentation-image">
+                <img src="./img.jpg" alt="Le Cri - Edvard Munch - Représentation 3D">
+            </div>
+            <div class="presentation-content">
+                <h2>Notre œuvre d'art interactive</h2>
+                <p>
+                    <strong>Le Cri</strong> (1893) est l'une des œuvres les plus célèbres d'<strong>Edvard Munch</strong>, peintre norvégien et figure majeure de l'expressionnisme.
+                </p>
+                <p>
+                    Ce tableau, qui représente une figure androgyne hurlant sous un ciel tourmenté, est devenu une icône de l'art moderne, symbolisant l'angoisse existentielle de l'humanité.
+                </p>
+                <p>
+                    Notre projet WebGL offre une <strong>réinterprétation interactive</strong> de cette œuvre, permettant aux visiteurs d'explorer ses éléments sous différents angles et avec divers effets visuels.
+                </p>
+                <a href="#viewer" class="btn btn-primary">Explorer en 3D</a>
+            </div>
+        </div>
     </section>
 
-    <section class="explanation-section">
-        <h1>Notre processus créatif</h1>
-        <p class="bottom-text">
-            La réalisation de ce projet a suivi une approche méthodique en plusieurs étapes :
-            <br><br>
-            <strong>1. Analyse artistique :</strong>
-            Nous avons étudié en profondeur "Le Cri", analysant sa composition, sa palette de couleurs et son message émotionnel. Cette phase nous a permis de comprendre comment traduire l'essence de l'œuvre en 3D.
-            <br><br>
-            <strong>2. Conception 3D :</strong>
-            Nous avons créé des modèles 3D dans Blender, en nous concentrant sur la reproduction des formes caractéristiques et des proportions du tableau. Les modèles ont été optimisés pour le web tout en conservant leur expressivité.
-            <br><br>
-            <strong>3. Développement technique :</strong>
-            L'intégration dans Three.js a nécessité l'écriture de shaders personnalisés pour reproduire fidèlement les effets de couleur et de lumière. Nous avons particulièrement travaillé sur les effets de transparence et les reflets pour capturer l'atmosphère unique du tableau.
-            <br><br>
-            <strong>4. Tests et ajustements :</strong>
-            Plusieurs sessions de test sur différents appareils nous ont permis d'affiner les détails visuels et l'interactivité. Nous avons ajusté les performances pour garantir une expérience fluide même sur des machines moins puissantes.
-            <br><br>
-            <strong>5. Documentation :</strong>
-            Enfin, nous avons rédigé une documentation technique complète et créé cette page de présentation pour expliquer notre démarche et les choix techniques effectués.
-            <br><br>
-            Ce projet nous a permis d'allier <strong>art</strong> et <strong>technologie</strong>, en recréant une œuvre majeure de l'histoire de l'art sous une forme interactive et moderne, tout en respectant son essence émotionnelle.
-        </p>
+    <!-- SECTION FONCTIONNALITÉS -->
+    <section class="features-section" id="features">
+        <h2 class="section-title">Fonctionnalités implémentées</h2>
+        <p class="section-subtitle">Découvrez les caractéristiques techniques de notre projet</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Modélisation 3D détaillée</h4>
+                    <p>Reproduction fidèle des éléments du tableau</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Système d'éclairage dynamique</h4>
+                    <p>Lumières ajustables en temps réel</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Ombres portées réalistes</h4>
+                    <p>Shadows maps haute résolution</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Contrôle interactif de la caméra</h4>
+                    <p>Navigation fluide avec OrbitControls</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Effet de brouillard atmosphérique</h4>
+                    <p>Ambiance dramatique configurable</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Surfaces réfléchissantes</h4>
+                    <p>Effet miroir sur l'eau</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Textures haute résolution</h4>
+                    <p>Matériaux détaillés et réalistes</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Skybox immersive</h4>
+                    <p>Ciel tourmenté à 360°</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Effets spéculaires</h4>
+                    <p>Brillance et reflets réalistes</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Interface de contrôle GUI</h4>
+                    <p>Panneau dat.GUI intégré</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon checked">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Animations fluides</h4>
+                    <p>Bateaux animés et effets dynamiques</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon unchecked">
+                    <svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>
+                </div>
+                <div class="feature-content">
+                    <h4>Environment mapping</h4>
+                    <p>En développement</p>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <!-- Espace vide pour le défilement -->
-    <div style="height: 1vh;"></div>
+    <!-- SECTION TECHNIQUE -->
+    <section class="technical-section" id="technical">
+        <h2 class="section-title">Explications techniques</h2>
+        <p class="section-subtitle">Les technologies et méthodes utilisées dans ce projet</p>
+        
+        <div class="technical-grid">
+            <div class="technical-card">
+                <h3>Modélisation 3D</h3>
+                <p>Nous avons recréé les éléments clés du tableau (la figure, le pont, le ciel tourmenté) en utilisant des formes géométriques 3D. Les modèles ont été conçus pour capturer l'essence expressionniste de l'œuvre originale.</p>
+            </div>
+            <div class="technical-card">
+                <h3>Textures et matériaux</h3>
+                <p>Chaque élément 3D est recouvert de textures haute résolution. Nous avons utilisé des shaders personnalisés pour les effets de transparence et les reflets, notamment pour le ciel et l'eau.</p>
+            </div>
+            <div class="technical-card">
+                <h3>Éclairage et ambiance</h3>
+                <p>Un système d'éclairage complexe combine plusieurs sources lumineuses pour créer des ombres portées réalistes. Un effet de brouillard a été ajouté pour renforcer l'atmosphère dramatique.</p>
+            </div>
+            <div class="technical-card">
+                <h3>Interactivité</h3>
+                <p>L'utilisateur peut contrôler la caméra pour explorer la scène. Une interface graphique (GUI) permet d'ajuster en temps réel divers paramètres comme l'intensité de la lumière.</p>
+            </div>
+            <div class="technical-card">
+                <h3>Optimisation</h3>
+                <p>Pour garantir des performances fluides, nous avons optimisé les modèles 3D et utilisé des techniques de level of detail (LOD). Le chargement se fait en arrière-plan.</p>
+            </div>
+            <div class="technical-card">
+                <h3>Animations</h3>
+                <p>Des animations subtiles (mouvement des bateaux, oscillation des éléments) ajoutent une dimension dynamique à l'expérience, tout en restant fidèles à l'esprit du tableau.</p>
+            </div>
+        </div>
+    </section>
 
+    <!-- SECTION PROCESSUS -->
+    <section class="process-section" id="process">
+        <h2 class="section-title">Notre processus créatif</h2>
+        <p class="section-subtitle">Les étapes de réalisation de ce projet</p>
+        
+        <div class="process-timeline">
+            <div class="process-item">
+                <div class="process-number">1</div>
+                <div class="process-content">
+                    <h3>Analyse artistique</h3>
+                    <p>Nous avons étudié en profondeur "Le Cri", analysant sa composition, sa palette de couleurs et son message émotionnel pour comprendre comment traduire l'essence de l'œuvre en 3D.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-number">2</div>
+                <div class="process-content">
+                    <h3>Conception 3D</h3>
+                    <p>Création des modèles 3D dans Blender, en se concentrant sur la reproduction des formes caractéristiques et des proportions du tableau, optimisés pour le web.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-number">3</div>
+                <div class="process-content">
+                    <h3>Développement technique</h3>
+                    <p>Intégration dans Three.js avec des shaders personnalisés pour reproduire fidèlement les effets de couleur, de lumière, de transparence et les reflets.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-number">4</div>
+                <div class="process-content">
+                    <h3>Tests et ajustements</h3>
+                    <p>Sessions de test sur différents appareils pour affiner les détails visuels et garantir une expérience fluide même sur des machines moins puissantes.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-number">5</div>
+                <div class="process-content">
+                    <h3>Documentation</h3>
+                    <p>Rédaction de la documentation technique et création de cette page de présentation pour expliquer notre démarche et les choix effectués.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <h3>Le Cri de Munch</h3>
+            <p>Une réinterprétation 3D interactive</p>
+            <p>Projet WebGL avec Three.js</p>
+            <div class="footer-credits">
+                <p>© 2024 - Projet universitaire</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts UI -->
     <script>
-        // Masquer la fenêtre d'information
-        document.getElementById('information').addEventListener('click', function() {
-            document.querySelector('.information').style.display = 'none';
+        // Masquer le loader après un délai (temps pour charger la scène)
+        window.addEventListener('load', function() {
+            // Attendre que tout soit chargé + un petit délai de sécurité
+            setTimeout(function() {
+                const loader = document.getElementById('loaderScreen');
+                loader.classList.add('hidden');
+                // Afficher le modal d'info après que le loader disparaisse
+                setTimeout(function() {
+                    document.getElementById('infoModal').classList.add('active');
+                }, 500);
+            }, 2000); // 2 secondes minimum pour laisser la scène se charger
         });
 
-        // Défilement vers le bas de la page
-        document.getElementById('scrollButton').addEventListener('click', function() {
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
+        // Fermer le modal d'information et autoriser le scroll
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('infoModal').classList.remove('active');
+            document.body.classList.remove('no-scroll');
+        });
+
+        // Navigation mobile
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scroll pour les liens de navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Fermer le menu mobile
+                    document.getElementById('navMenu').classList.remove('active');
+                }
             });
         });
     </script>
