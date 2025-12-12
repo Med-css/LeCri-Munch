@@ -385,13 +385,13 @@ function animate() {
   }
 
   // Animation Sprites (Éléments flottants)
-  if (sprite) {
-    // Bobbing motion
-    sprite.position.y = 160 + Math.sin(t * 1.5) * 10;
-  }
-  if (sprite2) {
-    sprite2.position.y = 160 + Math.sin(t * 1.2 + 2) * 10;
-  }
+  // if (sprite) {
+  //   // Bobbing motion
+  //   sprite.position.y = 160 + Math.sin(t * 1.5) * 10;
+  // }
+  // if (sprite2) {
+  //   sprite2.position.y = 160 + Math.sin(t * 1.2 + 2) * 10;
+  // }
 
   renderer.render(scene, camera);
 }
