@@ -340,17 +340,23 @@
 
     <!-- Scripts UI -->
     <script>
-        // Masquer le loader après un délai (temps pour charger la scène)
-        window.addEventListener('load', function() {
-            // Attendre que tout soit chargé + un petit délai de sécurité
+        // Gestion du loader avec les événements réels
+        const loaderText = document.querySelector('.loader-text');
+        const loaderScreen = document.getElementById('loaderScreen');
+
+        window.addEventListener('loaderProgress', function(e) {
+            const progress = Math.round(e.detail.progress);
+            loaderText.innerText = `Chargement de la scène : ${progress}%`;
+        });
+
+        window.addEventListener('loaderComplete', function() {
             setTimeout(function() {
-                const loader = document.getElementById('loaderScreen');
-                loader.classList.add('hidden');
-                // Afficher le modal d'info après que le loader disparaisse
+                loaderScreen.classList.add('hidden');
+                // Afficher le modal d'info
                 setTimeout(function() {
                     document.getElementById('infoModal').classList.add('active');
                 }, 500);
-            }, 2000); // 2 secondes minimum pour laisser la scène se charger
+            }, 500); // Petit délai pour laisser le temps de voir le 100%
         });
 
         // Fermer le modal d'information et autoriser le scroll

@@ -481,6 +481,11 @@ section {
     width: 100% !important;
     height: 100% !important;
     display: block;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    outline: none;
 }
 
 /* Panneau de contrôle GUI */
